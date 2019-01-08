@@ -10,4 +10,6 @@ public interface OrderMapper {
 
     List<Order> selectByOrderIdBetween(@Param("startOrderId") Long startOrderId, @Param("endOrderId") Long endOrderId);
 
+    int insertOrder(Order order);
+
 }

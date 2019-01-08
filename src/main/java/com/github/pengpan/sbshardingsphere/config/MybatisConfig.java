@@ -1,19 +1,20 @@
 package com.github.pengpan.sbshardingsphere.config;
 
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
-@Configuration
+@Component
 @EnableTransactionManagement
 @MapperScan(basePackages = "com.github.pengpan.sbshardingsphere.mapper",
         sqlSessionTemplateRef = "shardSqlSessionTemplate")
@@ -24,8 +25,10 @@ public class MybatisConfig {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/*.xml"));
-        //bean.setConfigLocation(new DefaultResourceLoader().getResource("classpath:mybatis/mybatis-config.xml"));
-        return bean.getObject();
+        SqlSessionFactory sessionFactory = bean.getObject();
+        Configuration configuration = sessionFactory.getConfiguration();
+        configuration.setMapUnderscoreToCamelCase(true);
+        return sessionFactory;
     }
 
     @Bean(name = "shardTransactionManager")
